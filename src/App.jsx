@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState } from "react";
+import PinLogin from "./components/PinLogin";
+import Dashboard from "./components/Dashboard";
+import PlayerSearch from "./components/PlayerSearch"; // Adjust path as needed
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [showPlayerSearch, setShowPlayerSearch] = useState(false);
+
+  // Called when user logs in
+  const handleLoginSuccess = (name) => {
+    setUserName(name);
+    setIsAuthenticated(true);
+  };
+
+  // Called when "Schedule a Match" is clicked
+  const handleScheduleMatch = () => {
+    setShowPlayerSearch(true);
+  };
+
+  // Called when a player is selected from the search
+  const handlePlayerSelected = (player) => {
+    setShowPlayerSearch(false);
+    // TODO: Show availability popup or next step
+    alert(`You selected: ${player.firstName} ${player.lastName}`);
+    // You can now show the availability modal or continue scheduling
+  };
+
+  // Called when player search is closed/canceled
+  const handleClosePlayerSearch = () => {
+    setShowPlayerSearch(false);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      {!isAuthenticated ? (
+        <PinLogin onSuccess={handleLoginSuccess} />
+      ) : (
+        <>
+          <Dashboard
+            playerName={userName}
+            onScheduleMatch={handleScheduleMatch}
+            onOpenChat={() => alert("Chat coming soon!")}
+          />
+          {showPlayerSearch && (
+            <PlayerSearch
+              onSelect={handlePlayerSelected}
+              onClose={handleClosePlayerSearch}
+              excludeName={userName}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
